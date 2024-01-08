@@ -1,36 +1,31 @@
 import os
-import tempfile
-import requests
 import pytesseract
 
-image_urls_file = 'urls.txt'
-output_dir = 'output'
+input_dir = 'input'
+page_image_extension = 'tif'
 
-with open(image_urls_file) as iuf:
-    image_urls = iuf.read().splitlines()
+# Could be books or newspaper issues.
+page_containers = os.listdir(input_dir)
 
-filename_counter = 0
-for image_url in image_urls:
-    filename_counter += 1
-    image_temp_path = os.path.join(tempfile.gettempdir(), str(filename_counter) + '.tif')
-    print(f"Downloading {image_url}...", end='')
-    response = requests.get(image_url, stream=True)
-    if response.status_code == 200:
-        # Get the page image file and save it.
-        image_file = open(image_temp_path, 'wb+')
-        image_file.write(response.content)
-        image_file.close
+for page_container in page_containers:
+    pages = os.listdir(os.path.join(input_dir, page_container))
 
-        # Generate hOCR and save it.
-        hocr_output_path = os.path.join(output_dir, str(filename_counter) + '.hocr')
-        print("Generating hOCR...", end='')
-        hocr_content = pytesseract.image_to_pdf_or_hocr(image_temp_path, extension='hocr')
-        hocr_file = open(hocr_output_path, 'wb+')
-        hocr_file.write(hocr_content)
-        hocr_file.close
-        print("Done.")
+    for page in pages:
+        if page.endswith(page_image_extension):
+            page_image_filepath = os.path.join(input_dir, page_container, page)
+            page_image_filepath_without_extension = os.path.splitext(page_image_filepath)[0]
+            page_hocr_filepath = os.path.join(page_image_filepath_without_extension + '.hocr')
 
-        # Delete the page image file.
-        if os.path.exists(image_temp_path):
-            os.remove(image_temp_path)
+            try:
+                # Generate hOCR and save it.
+                print(f"Generating hOCR from {page}... ", end='')
+                hocr_content = pytesseract.image_to_pdf_or_hocr(page_image_filepath, extension='hocr')
+                hocr_file = open(page_hocr_filepath, 'wb+')
+                hocr_file.write(hocr_content)
+                hocr_file.close
+                print("done.")
+            except Exception as e:
+                print(f'Error: {e}')
+
+
 
