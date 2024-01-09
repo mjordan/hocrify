@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 input_dir = 'input'
 page_image_extension = 'tif'
+filename_segment_separator = '-'
 generate_ocr = True
 
 # Could be books or newspaper issues.
@@ -17,7 +18,9 @@ def generate_output(oddeven):
         pages = os.listdir(os.path.join(input_dir, page_container))
 
         for page in pages:
-            filename_segments = os.path.splitext(page)[0].split('-')
+            # We distinguish between odd an even pages so each of out two processes
+            # don't step on each other.
+            filename_segments = os.path.splitext(page)[0].split(filename_segment_separator)
             order_segment = filename_segments[3]
             if int(order_segment) % 2 == 0 and oddeven == 'odd':
                 continue
