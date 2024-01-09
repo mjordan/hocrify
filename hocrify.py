@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+import logging
 from multiprocessing import Process
 
 import pytesseract
@@ -11,15 +12,23 @@ output_dir = ''
 page_image_extension = 'tif'
 filename_segment_separator = '-'
 generate_ocr = True
+log_file_path = 'log.log'
 
 # If you don't have tesseract executable in your PATH, include the following:
 # pytesseract.pytesseract.tesseract_cmd = r'<full_path_to_your_tesseract_executable>'
 # Example tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract'
 
+logging.basicConfig(
+    filename=log_file_path,
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%d-%b-%y %H:%M:%S')
+
 # Could be books or newspaper issues.
 page_containers = os.listdir(input_dir)
 
 def generate_output(oddeven):
+    logging.info(f"Logging test from {oddeven} process.")
     for page_container in page_containers:
         if len(output_dir) > 0:
             if not os.path.exists(os.path.join(output_dir, page_container)):
@@ -62,6 +71,7 @@ def generate_output(oddeven):
                     hocr_file.close
                     print("done.")
                 except Exception as e:
+                    logging.error(f'Error generating hOCR: {e}')
                     print(f'Error generating hOCR: {e}')
 
                 # Extract word content from hOCR and save it to a file.
@@ -77,6 +87,7 @@ def generate_output(oddeven):
                         ocr_file.write(ocr_content)
                         ocr_file.close
                     except Exception as e:
+                        logging.error(f'Error generating OCR: {e}')
                         print(f'Error generating OCR: {e}')
 
 if __name__ == "__main__":

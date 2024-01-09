@@ -83,6 +83,7 @@ You will need to conigure the following four variables at the top of the script:
 * `page_image_extension`: the extension of the source page image file, without the leading period, e.g. `tif`.
 * `filename_segment_separator`: the character used to separate the page number from the rest of the page image file, e.g. the `-` that separates the `02` from `1948-11-12` in `1948-11-12-02.tif`. Does not need to be the same as the separator used in the non-page number part of the filename. It also doesn't matter what comes before the page number separator.
 * `generate_ocr`: set to `True` to extract the text from the hOCR, producing the equivalent of an OCR file with no line breaks.
+* `log_file_path`: the path to your log file.
 * `pytesseract.pytesseract.tesseract_cmd`: the full path to the Tesseract executable, if necessary.
 
 ## Requirements
