@@ -1,6 +1,6 @@
 # Hocrify
 
-A script to generate hOCR using Tesseract on a directory of page image files.
+A script to generate hOCR, and optionally OCR, on a directory of page image files using Tesseract.
 
 For example, if you have a directory of files grouped by newspaper issue, like this:
 
@@ -80,7 +80,7 @@ Once configured (see next section), you run the script like this:
 
 `python hocrify.py`
 
-This script is not fast. It is optimized to run two parallel processes (one for odd numbered pages and one for even numbered pages) but it's still not very fast. If you have a lot of pages to process, you should probably plan on running the script on multiple computers at one time.
+This script is not fast. It is optimized to run two parallel processes (one for odd numbered pages and one for even numbered pages) but it's still not very fast. If you have a lot of pages to process, you may want to consider running the script on multiple computers at one time.
 
 ## Configuration
 
