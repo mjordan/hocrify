@@ -2,13 +2,14 @@ import os
 import re
 import shutil
 import logging
+import time
 from multiprocessing import Process
 
 import pytesseract
 from bs4 import BeautifulSoup
 
 input_dir = 'input'
-output_dir = ''
+output_dir = 'output'
 page_image_extension = 'tif'
 filename_segment_separator = '-'
 generate_ocr = True
@@ -24,11 +25,20 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%d-%b-%y %H:%M:%S')
 
+if generate_ocr is True:
+    generate_ocr_message = f"and OCR"
+else:
+    generate_ocr_message = ''
+if len(output_dir) > 0:
+    start_message = f"hocrify job started (hOCR {generate_ocr_message}), using page images from {os.path.abspath(input_dir)} and saving output to {os.path.abspath(output_dir)}."
+else:
+    start_message = f"hocrify job started (hOCR {generate_ocr_message}), using page images from {os.path.abspath(input_dir)} and saving output to the source directory."
+logging.info(start_message)
+
 # Could be books or newspaper issues.
 page_containers = os.listdir(input_dir)
 
 def generate_output(oddeven):
-    logging.info(f"Logging test from {oddeven} process.")
     for page_container in page_containers:
         if len(output_dir) > 0:
             if not os.path.exists(os.path.join(output_dir, page_container)):
@@ -37,8 +47,8 @@ def generate_output(oddeven):
         pages = os.listdir(os.path.join(input_dir, page_container))
 
         for page in pages:
-            # We distinguish between odd an even pages so each of out two processes
-            # don't step on each other.
+            timer_start = time.perf_counter()
+            # We distinguish between odd an even pages so each of out two processes don't step on each other.
             filename_segments = os.path.splitext(page)[0].split(filename_segment_separator)
             order_segment = filename_segments[-1]
             if int(order_segment) % 2 == 0 and oddeven == 'odd':
@@ -60,16 +70,10 @@ def generate_output(oddeven):
 
                 try:
                     # Generate hOCR and save it to a file.
-                    if generate_ocr is True:
-                        ocr_message = 'and OCR'
-                    else:
-                        ocr_message = ''
-                    print(f"Generating hOCR {ocr_message} from {page}... ", end='')
                     hocr_content = pytesseract.image_to_pdf_or_hocr(page_image_filepath, extension='hocr')
                     hocr_file = open(page_hocr_filepath, 'wb+')
                     hocr_file.write(hocr_content)
                     hocr_file.close
-                    print("done.")
                 except Exception as e:
                     logging.error(f'Error generating hOCR: {e}')
                     print(f'Error generating hOCR: {e}')
@@ -90,12 +94,22 @@ def generate_output(oddeven):
                         logging.error(f'Error generating OCR: {e}')
                         print(f'Error generating OCR: {e}')
 
+                timer_end = time.perf_counter()
+
+                page_message = f"Generated hOCR {generate_ocr_message} from {page} in {timer_end - timer_start:0.1f} seconds."
+                logging.info(page_message)
+                print(page_message)
+
 if __name__ == "__main__":
     if len(output_dir) > 0 and not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
     process_odd = Process(target=generate_output, args=('odd',))
     process_odd.start()
+    process_odd.join()
 
     process_even = Process(target=generate_output, args=('even',))
     process_even.start()
+    process_even.join()
+
+    logging.info(f"hocrify job completed.")

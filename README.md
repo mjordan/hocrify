@@ -42,7 +42,7 @@ input/
     ├── 1948-11-12-04.hocr
     └── 1948-11-12-04.tif
 ```
-Also provides the option to create an OCR file, which just contains the extracted text content:
+Hocrify also provides the option to create an OCR file, which just contains the extracted text content (Hocrify doesn't reprocess the input image):
 
 ```
 input/
@@ -87,7 +87,7 @@ This script is not fast. It is optimized to run two parallel processes (one for 
 You will need to configure the following four variables at the top of the script:
 
 * `input_dir`: the path to the page images, organized by book or newspaper issue.
-* `output_dir`: where to save the output. If left empty (`''`), the input_dir will be used.
+* `output_dir`: where to save the output, including a copy of the input page image files. If left empty (`''`), the input_dir will be used.
 * `page_image_extension`: the extension of the source page image file, without the leading period, e.g. `tif`.
 * `filename_segment_separator`: the character used to separate the page number from the rest of the page image file, e.g. the `-` that separates the `02` from `1948-11-12` in `1948-11-12-02.tif`. Does not need to be the same as the separator used in the non-page number part of the filename. It also doesn't matter what comes before the page number separator.
 * `generate_ocr`: set to `True` to extract the text from the hOCR, producing the equivalent of an OCR file with no line breaks.
