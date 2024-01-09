@@ -1,6 +1,6 @@
 # Hocrify
 
-A script to generate hOCR using Tesseract on a directory of TIFF files. Proof of concept at the moment, but once we figure out our requirements, we can modify the script as needed.
+A script to generate hOCR using Tesseract on a directory of page image files.
 
 For example, if you have a directory of files grouped by newspaper issue, like this:
 
@@ -74,9 +74,17 @@ input/
     └── 1948-11-12-04.txt
 ```
 
-## Configuration and usage
+## Usage
 
-You will need to conigure the following four variables at the top of the script:
+Once configured (see next section), you run the script like this:
+
+`python hocrify.py`
+
+This script is not fast. It is optimized to run two parallel processes (one for odd numbered pages and one for even numbered pages) but it's still not very fast. If you have a lot of pages to process, you should probably plan on running the script on multiple computers at one time.
+
+## Configuration
+
+You will need to configure the following four variables at the top of the script:
 
 * `input_dir`: the path to the page images, organized by book or newspaper issue.
 * `output_dir`: where to save the output. If left empty (`''`), the input_dir will be used.
@@ -84,9 +92,10 @@ You will need to conigure the following four variables at the top of the script:
 * `filename_segment_separator`: the character used to separate the page number from the rest of the page image file, e.g. the `-` that separates the `02` from `1948-11-12` in `1948-11-12-02.tif`. Does not need to be the same as the separator used in the non-page number part of the filename. It also doesn't matter what comes before the page number separator.
 * `generate_ocr`: set to `True` to extract the text from the hOCR, producing the equivalent of an OCR file with no line breaks.
 * `log_file_path`: the path to your log file.
-* `pytesseract.pytesseract.tesseract_cmd`: the full path to the Tesseract executable, if necessary.
+* `pytesseract.pytesseract.tesseract_cmd`: the full path to the Tesseract executable file. Whether this is necessary will depend on the computer the script is running on.
 
 ## Requirements
 
 - Tesseract
 - [pytesseract](https://pypi.org/project/pytesseract/)
+- [BeautifulSoup](https://pypi.org/project/beautifulsoup4/)
