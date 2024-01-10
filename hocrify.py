@@ -9,15 +9,22 @@ import pytesseract
 from bs4 import BeautifulSoup
 
 input_dir = 'input'
+# Leave 'output_dir' empty ('') to write output back into input_dir.
 output_dir = 'output'
 page_image_extension = 'tif'
+source_language = 'eng'
 filename_segment_separator = '-'
+# Set 'generate_ocr' to False to only generate hOCR for each page.
 generate_ocr = True
-log_file_path = 'log.log'
+log_file_path = 'tesseract.log'
 
 # If you don't have tesseract executable in your PATH, include the following:
 # pytesseract.pytesseract.tesseract_cmd = r'<full_path_to_your_tesseract_executable>'
 # Example tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract'
+
+tesseract_version = pytesseract.pytesseract.get_tesseract_version()
+# Leave 'do_invert' as is for Tesseract verson 4 and higher.
+do_invert = ' tessedit_do_invert=0'
 
 logging.basicConfig(
     filename=log_file_path,
@@ -30,9 +37,9 @@ if generate_ocr is True:
 else:
     generate_ocr_message = ''
 if len(output_dir) > 0:
-    start_message = f"hocrify job started (hOCR {generate_ocr_message}), using page images from {os.path.abspath(input_dir)} and saving output to {os.path.abspath(output_dir)}."
+    start_message = f"hocrify job started (hOCR {generate_ocr_message}), using page images from {os.path.abspath(input_dir)} and saving output to {os.path.abspath(output_dir)} (tesseract version {tesseract_version})."
 else:
-    start_message = f"hocrify job started (hOCR {generate_ocr_message}), using page images from {os.path.abspath(input_dir)} and saving output to the source directory."
+    start_message = f"hocrify job started (hOCR {generate_ocr_message}), using page images from {os.path.abspath(input_dir)} and saving output to the source directory (tesseract version {tesseract_version})."
 logging.info(start_message)
 
 # Could be books or newspaper issues.
@@ -70,7 +77,7 @@ def generate_output(oddeven):
 
                 try:
                     # Generate hOCR and save it to a file.
-                    hocr_content = pytesseract.image_to_pdf_or_hocr(page_image_filepath, extension='hocr')
+                    hocr_content = pytesseract.image_to_pdf_or_hocr(page_image_filepath, extension='hocr', lang=source_language, config=do_invert)
                     hocr_file = open(page_hocr_filepath, 'wb+')
                     hocr_file.write(hocr_content)
                     hocr_file.close

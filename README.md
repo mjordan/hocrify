@@ -80,7 +80,7 @@ Once configured (see next section), you run the script like this:
 
 `python hocrify.py`
 
-This script is not fast. It is optimized to run two parallel processes (one for odd numbered pages and one for even numbered pages) but it's still not very fast. If you have a lot of pages to process, you may want to consider running the script on multiple computers at one time.
+This script is not fast. It is optimized to run two parallel processes (one for odd numbered pages and one for even numbered pages) and with a "inverted text" OCR disabled (a common optimiztion) but it's still not very fast. If you have a lot of pages to process, you will want to consider running the script on multiple computers at one time.
 
 ## Configuration
 
@@ -92,6 +92,7 @@ You will need to configure the following four variables at the top of the script
 * `filename_segment_separator`: the character used to separate the page number from the rest of the page image file, e.g. the `-` that separates the `02` from `1948-11-12` in `1948-11-12-02.tif`. Does not need to be the same as the separator used in the non-page number part of the filename. It also doesn't matter what comes before the page number separator.
 * `generate_ocr`: set to `True` to extract the text from the hOCR, producing the equivalent of an OCR file with no line breaks.
 * `log_file_path`: the path to your log file.
+* `source_language`: language of the source material. Common languages are 'eng', 'fre' and 'chi_sim'. Note that not all language packs may be installed on a given computer. Run `tesseract --list-langs` to see those installed.
 * `pytesseract.pytesseract.tesseract_cmd`: the full path to the Tesseract executable file. Whether this is necessary will depend on the computer the script is running on.
 
 ## Requirements
