@@ -80,7 +80,7 @@ Once configured (see next section), you run the script like this:
 
 `python hocrify.py`
 
-This script is not fast. It is optimized to run two parallel processes (one for odd numbered pages and one for even numbered pages) and with a "inverted text" OCR disabled (a common optimiztion) but it's still not very fast. If you have a lot of pages to process, you will want to consider running the script on multiple computers at one time.
+This script is not extremely fast. It is optimized to run two parallel processes (one for odd numbered pages and one for even numbered pages) and with a "inverted text" OCR disabled (a common optimiztion) but it's still not very fast. If you have a lot of pages to process, you will want to consider running the script on multiple computers at one time.
 
 ## Configuration
 

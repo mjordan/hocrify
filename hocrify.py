@@ -18,9 +18,9 @@ filename_segment_separator = '-'
 generate_ocr = True
 log_file_path = 'tesseract.log'
 
-# If you don't have tesseract executable in your PATH, include the following:
-# pytesseract.pytesseract.tesseract_cmd = r'<full_path_to_your_tesseract_executable>'
-# Example tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract'
+# If you don't have tesseract executable in your PATH, uncomment this next variable
+# and specify the path to the tesseract executable.
+# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 tesseract_version = pytesseract.pytesseract.get_tesseract_version()
 # Leave 'do_invert' as is for Tesseract verson 4 and higher.
@@ -88,7 +88,7 @@ def generate_output(oddeven):
                 # Extract word content from hOCR and save it to a file.
                 if generate_ocr is True:
                     try:
-                        soup = BeautifulSoup(hocr_content, features='xml')
+                        soup = BeautifulSoup(hocr_content, 'html.parser')
                         page_text = soup.findAll(text=True)
                         ocr_content = ' '.join(page_text)
                         ocr_content = re.sub('\n', '', ocr_content)
