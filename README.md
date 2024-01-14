@@ -97,6 +97,6 @@ You will need to configure the following four variables at the top of the script
 
 ## Requirements
 
-- Tesseract. Version 5 performs more than twice as fast as version 4, but both versions work with this script.
+- Tesseract. Version 5 performs approximately three times faster than version 4, but both versions work with this script.
 - [pytesseract](https://pypi.org/project/pytesseract/)
 - [BeautifulSoup](https://pypi.org/project/beautifulsoup4/)

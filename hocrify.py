@@ -20,7 +20,7 @@ log_file_path = 'tesseract.log'
 
 # If you don't have tesseract executable in your PATH, uncomment this next variable
 # and specify the path to the tesseract executable.
-# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 tesseract_version = pytesseract.pytesseract.get_tesseract_version()
 # Leave 'do_invert' as is for Tesseract verson 4 and higher.
