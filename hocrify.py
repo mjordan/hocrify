@@ -1,4 +1,5 @@
 import os
+import sys
 import re
 import shutil
 import logging
@@ -8,29 +9,48 @@ from multiprocessing import Process
 import pytesseract
 from bs4 import BeautifulSoup
 
+###########################
+# Configuration varaibles #
+###########################
+
 input_dir = 'input'
 # Leave 'output_dir' empty ('') to write output back into input_dir.
 output_dir = 'output'
 page_image_extension = 'tif'
+hocr_extension = 'hocr'
+ocr_extension = 'txt'
 source_language = 'eng'
 filename_segment_separator = '-'
 # Set 'generate_ocr' to False to only generate hOCR for each page.
 generate_ocr = True
 log_file_path = 'tesseract.log'
 
-# If you don't have tesseract executable in your PATH, uncomment this next variable
-# and specify the path to the tesseract executable.
+# If you don't have tesseract executable in your system's PATH, uncomment this next
+# variable and specify the path to the tesseract executable.
 # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-tesseract_version = pytesseract.pytesseract.get_tesseract_version()
-# Leave 'do_invert' as is for Tesseract verson 4 and higher.
+# Leave 'do_invert' as is unless your page images contain substantial amounts
+# of text in more than one language. If the accuracy of the OCR in your additional
+# language text is very poor, you should change this to ' tessedit_do_invert=1',
+# but doing so will come with a hit to processing speed.
 do_invert = ' tessedit_do_invert=0'
+
+############################################
+# You do not need to change anything below #
+############################################
 
 logging.basicConfig(
     filename=log_file_path,
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%d-%b-%y %H:%M:%S')
+
+if not os.path.exists(input_dir):
+    message = f'Error: cannot find input directory "{input_dir}".'
+    logging.error(message)
+    sys.exit(message)
+
+tesseract_version = pytesseract.pytesseract.get_tesseract_version()
 
 if generate_ocr is True:
     generate_ocr_message = f"and OCR"
@@ -63,17 +83,17 @@ def generate_output(oddeven):
             if int(order_segment) % 2 != 0 and oddeven == 'even':
                 continue
 
-            if page.endswith(page_image_extension):
+            if page.endswith('.' + page_image_extension):
                 page_image_filepath = os.path.join(input_dir, page_container, page)
                 if len(output_dir) > 0:
                     shutil.copyfile(page_image_filepath, os.path.join(output_dir, page_container, page))
                 page_image_filepath_without_extension = os.path.splitext(page_image_filepath)[0]
                 if len(output_dir) > 0:
-                    page_hocr_filepath = os.path.join(output_dir, page_container, os.path.splitext(page)[0] + '.hocr')
-                    page_ocr_filepath = os.path.join(output_dir, page_container, os.path.splitext(page)[0] + '.txt')
+                    page_hocr_filepath = os.path.join(output_dir, page_container, os.path.splitext(page)[0] + '.' + hocr_extension)
+                    page_ocr_filepath = os.path.join(output_dir, page_container, os.path.splitext(page)[0] + '.' + ocr_extension)
                 else:
-                    page_hocr_filepath = os.path.join(page_image_filepath_without_extension + '.hocr')
-                    page_ocr_filepath = os.path.join(page_image_filepath_without_extension + '.txt')
+                    page_hocr_filepath = os.path.join(page_image_filepath_without_extension + '.' + hocr_extension)
+                    page_ocr_filepath = os.path.join(page_image_filepath_without_extension + '.' + ocr_extension)
 
                 try:
                     # Generate hOCR and save it to a file.
@@ -92,10 +112,10 @@ def generate_output(oddeven):
                         page_text = soup.findAll(text=True)
                         ocr_content = ' '.join(page_text)
                         ocr_content = re.sub('\n', '', ocr_content)
-                        ocr_content = re.sub('html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"', '', ocr_content)
+                        ocr_content = re.sub('^.*transitional.dtd"', '', ocr_content)
                         ocr_content = re.sub(' +', ' ', ocr_content)
                         ocr_file = open(page_ocr_filepath, 'w+')
-                        ocr_file.write(ocr_content)
+                        ocr_file.write(ocr_content.strip())
                         ocr_file.close
                     except Exception as e:
                         logging.error(f'Error generating OCR: {e}')

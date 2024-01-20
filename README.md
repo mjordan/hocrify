@@ -73,14 +73,29 @@ input/
     ├── 1948-11-12-04.tif
     └── 1948-11-12-04.txt
 ```
+Usage is not limited to newspaper issues. Any paged item will work as long as page images in the item are in a single directory under 'input':
+
+```
+input/
+├── book1
+│   ├── page-01.tif
+│   ├── page-02.tif
+│   ├── page-03.tif
+│   └── page-04.tif
+└── book_2
+    ├── page-01.tif
+    ├── page-02.tif
+    ├── page-03.tif
+    ├── page-04.tif
+    ├── page-05.tif
+    └── page-06.tif
+```
 
 ## Usage
 
 Once configured (see next section), you run the script like this:
 
 `python hocrify.py`
-
-This script is not extremely fast. It is optimized to run two parallel processes (one for odd numbered pages and one for even numbered pages) and with a "inverted text" OCR disabled (a common optimiztion) but it's still not very fast. If you have a lot of pages to process, you will want to consider running the script on multiple computers at one time.
 
 ## Configuration
 
@@ -95,8 +110,21 @@ You will need to configure the following four variables at the top of the script
 * `source_language`: language of the source material. Common languages are 'eng', 'fre' and 'chi_sim'. Note that not all language packs may be installed on a given computer. Run `tesseract --list-langs` to see those installed.
 * `pytesseract.pytesseract.tesseract_cmd`: the full path to the Tesseract executable file. Whether this is necessary will depend on the computer the script is running on.
 
+## Performance
+
+The amount of time hocrify takes to process a single page image is determined by a few factors. Ways you can make it faster include:
+
+- Use Tesseract 5. It is substantially faster than Tesseract 4.
+- Generating OCR is very CPU-intensive. Therefore, you will get faster results running this script on computers with fast CPUs.
+- Keep the `do_invert` configuration variable as is.
+
 ## Requirements
 
-- Tesseract. Version 5 performs more than twice as fast as version 4, but both versions work with this script.
+- [Tesseract](https://tesseract-ocr.github.io/tessdoc/). Version 5 is faster than version 4, but both versions work with this script.
 - [pytesseract](https://pypi.org/project/pytesseract/)
-- [BeautifulSoup](https://pypi.org/project/beautifulsoup4/)
+- [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
+
+# License
+
+The Unlicense.
+
