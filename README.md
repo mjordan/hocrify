@@ -1,6 +1,6 @@
 # Hocrify
 
-A script to generate hOCR, and optionally OCR, on a directory of page image files using Tesseract.
+A script to generate [hOCR](https://en.wikipedia.org/wiki/HOCR) and [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition) on a directory of page image files using [Tesseract](https://tesseract-ocr.github.io/tessdoc/).
 
 For example, if you have a directory of files grouped by newspaper issue, like this:
 
@@ -102,10 +102,11 @@ Once configured (see next section), you run the script like this:
 You will need to configure the following four variables at the top of the script:
 
 * `input_dir`: the path to the page images, organized by book or newspaper issue.
-* `output_dir`: where to save the output, including a copy of the input page image files. If left empty (`''`), the input_dir will be used.
+* `output_dir`: where to save the output, including a copy of the input page image files. If left empty (`''`), the input_dir will be used. If the output directory doesn't exist, it will be created.
 * `page_image_extension`: the extension of the source page image file, without the leading period, e.g. `tif`.
 * `filename_segment_separator`: the character used to separate the page number from the rest of the page image file, e.g. the `-` that separates the `02` from `1948-11-12` in `1948-11-12-02.tif`. Does not need to be the same as the separator used in the non-page number part of the filename. It also doesn't matter what comes before the page number separator.
-* `generate_ocr`: set to `True` to extract the text from the hOCR, producing the equivalent of an OCR file with no line breaks.
+* `generate_hocr`: set to `True` to generate hOCR from the page images, `False` to not generate it.
+* `generate_ocr`: set to `True` to extract the text from the hOCR, producing the equivalent of an OCR file with no line breaks. Set to `False` to not create OCR.
 * `log_file_path`: the path to your log file.
 * `source_language`: language of the source material. Common languages are 'eng', 'fre' and 'chi_sim'. Note that not all language packs may be installed on a given computer. Run `tesseract --list-langs` to see those installed.
 * `pytesseract.pytesseract.tesseract_cmd`: the full path to the Tesseract executable file. Whether this is necessary will depend on the computer the script is running on.
@@ -120,6 +121,7 @@ The amount of time hocrify takes to process a single page image is determined by
 
 ## Requirements
 
+- Python
 - [Tesseract](https://tesseract-ocr.github.io/tessdoc/). Version 5 is faster than version 4, but both versions work with this script.
 - [pytesseract](https://pypi.org/project/pytesseract/)
 - [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
