@@ -110,6 +110,7 @@ You will need to configure the following four variables at the top of the script
 * `log_file_path`: the path to your log file.
 * `source_language`: language of the source material. Common languages are 'eng', 'fre' and 'chi_sim'. Note that not all language packs may be installed on a given computer. Run `tesseract --list-langs` to see those installed.
 * `pytesseract.pytesseract.tesseract_cmd`: the full path to the Tesseract executable file. Whether this is necessary will depend on the computer the script is running on.
+* `config_options`: some Tesseract configuration options to increase page-processing speed. You can try adding others if you can find them; these configuration options aren't well documented, especially for Tesseract 4 and 5.
 
 ## Performance
 

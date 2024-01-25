@@ -29,11 +29,12 @@ log_file_path = 'tesseract.log'
 # variable and specify the path to the tesseract executable.
 # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-# Leave 'do_invert' as is unless your page images contain substantial amounts
-# of text in more than one language. If the accuracy of the OCR in your additional
-# language text is very poor, you should change this to ' tessedit_do_invert=1',
-# but doing so will come with a hit to processing speed.
-do_invert = ' tessedit_do_invert=0'
+# A couple of Tesseract config options that are commonly used to optimize for speed.
+# Leave the 'tessedit_do_invert' Tesseract config setting as '0' unless your page
+# images contain substantial amounts of text in more than one language. If the
+# accuracy of the OCR in the additional language text is very poor, you should change
+# 'tessedit_do_invert' to '1', but doing so will come with a hit to processing speed.
+config_options = '-c tessedit_do_invert=0 -c OMP_THREAD_LIMIT=1'
 
 #######################################################
 # You do not need to change anything below this line. #
@@ -104,7 +105,7 @@ def generate_output(oddeven):
                 try:
                     # Generate hOCR, even if generate_hocr is False, since we need to
                     # get its text content to create the "OCR".
-                    hocr_content = pytesseract.image_to_pdf_or_hocr(page_image_filepath, extension='hocr', lang=source_language, config=do_invert)
+                    hocr_content = pytesseract.image_to_pdf_or_hocr(page_image_filepath, extension='hocr', lang=source_language, config=config_options)
                     if generate_hocr is True:
                         # If we want to keep the hOCR, we save it to a file.
                         hocr_file = open(page_hocr_filepath, 'wb+')
