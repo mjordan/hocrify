@@ -51,7 +51,11 @@ if not os.path.exists(input_dir):
     logging.error(message)
     sys.exit(message)
 
-tesseract_version = pytesseract.pytesseract.get_tesseract_version()
+try:
+    tesseract_version = pytesseract.pytesseract.get_tesseract_version()
+except Exception as e:
+    logging.error(f'Tesseract not found. Try uncommenting and configuring the "pytesseract.pytesseract.tesseract_cmd". Additional error information: {e}')
+    print('Tesseract not found. Try uncommenting and configuring the "pytesseract.pytesseract.tesseract_cmd". See the log for more info.')
 
 if generate_hocr is True and generate_ocr is True:
     generate_message = "hOCR and OCR"
@@ -81,8 +85,8 @@ def generate_output(oddeven):
 
         for page in pages:
             timer_start = time.perf_counter()
-            # We distinguish between odd an even pages so each of our two
-            # processes don't step on each other.
+            # We distinguish between odd an even pages so each of the two
+            # processes spawned below know which input files to process.
             filename_segments = os.path.splitext(page)[0].split(filename_segment_separator)
             order_segment = filename_segments[-1]
             if int(order_segment) % 2 == 0 and oddeven == 'odd':
@@ -103,11 +107,11 @@ def generate_output(oddeven):
                     page_ocr_filepath = os.path.join(page_image_filepath_without_extension + '.' + ocr_extension)
 
                 try:
-                    # Generate hOCR, even if generate_hocr is False, since we need to
-                    # get its text content to create the "OCR".
+                    # Generate hOCR, even if generate_hocr is False, since we need
+                    # to get its text content to create the OCR data.
                     hocr_content = pytesseract.image_to_pdf_or_hocr(page_image_filepath, extension='hocr', lang=source_language, config=config_options)
                     if generate_hocr is True:
-                        # If we want to keep the hOCR, we save it to a file.
+                        # If we want to keep the hOCR data, we save it to a file.
                         hocr_file = open(page_hocr_filepath, 'wb+')
                         hocr_file.write(hocr_content)
                         hocr_file.close
@@ -115,7 +119,7 @@ def generate_output(oddeven):
                     logging.error(f'Error generating hOCR: {e}')
                     print(f'Error generating hOCR: {e}')
 
-                # Extract text content from the hOCR XML and save it to a file.
+                # Extract text content from the hOCR XML and save it to an OCR file.
                 if generate_ocr is True:
                     try:
                         soup = BeautifulSoup(hocr_content, 'html.parser')
@@ -141,6 +145,7 @@ if __name__ == "__main__":
     if len(output_dir) > 0 and not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
+    # Split processing into odd and even pages.
     process_odd = Process(target=generate_output, args=('odd',))
     process_odd.start()
     process_odd.join()

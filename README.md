@@ -1,6 +1,6 @@
 # Hocrify
 
-A script to generate [hOCR](https://en.wikipedia.org/wiki/HOCR) and [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition) on a directory of page image files using [Tesseract](https://tesseract-ocr.github.io/tessdoc/).
+A Python script to generate [hOCR](https://en.wikipedia.org/wiki/HOCR) and [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition) on a directory of page image files using [Tesseract](https://tesseract-ocr.github.io/tessdoc/).
 
 For example, if you have a directory of files grouped by newspaper issue, like this:
 
@@ -42,7 +42,8 @@ input/
     ├── 1948-11-12-04.hocr
     └── 1948-11-12-04.tif
 ```
-Hocrify also provides the option to create an OCR file, which just contains the extracted text content (Hocrify doesn't reprocess the input image):
+
+Hocrify also provides the option to create an OCR file for each page image, which contains the extracted text content (Hocrify doesn't reprocess the input image):
 
 ```
 input/
@@ -118,12 +119,12 @@ The amount of time hocrify takes to process a single page image is determined by
 
 - Use Tesseract 5. It is substantially faster than Tesseract 4.
 - Generating OCR is very CPU-intensive. Therefore, you will get faster results running this script on computers with fast CPUs.
-- Keep the `do_invert` configuration variable as is.
+- Keep the `do_invert` and `OMP_THREAD_LIMIT` configuration variables as configured.
 
 ## Requirements
 
 - Python
-- [Tesseract](https://tesseract-ocr.github.io/tessdoc/). Version 5 is faster than version 4, but both versions work with this script.
+- [Tesseract](https://tesseract-ocr.github.io/tessdoc/) version 5. Version version 4 will work but it is slower than version 5.
 - [pytesseract](https://pypi.org/project/pytesseract/)
 - [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
 
