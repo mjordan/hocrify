@@ -100,7 +100,7 @@ Once configured (see next section), you run the script like this:
 
 ## Configuration
 
-You will need to configure the following four variables at the top of the script:
+You will need to configure the following variables at the top of the script:
 
 * `input_dir`: the path to the page images, organized by book or newspaper issue.
 * `output_dir`: where to save the output, including a copy of the input page image files. If left empty (`''`), output will be written back to `input_dir`. If the output directory doesn't exist, it will be created.
