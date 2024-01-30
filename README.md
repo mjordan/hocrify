@@ -103,7 +103,7 @@ Once configured (see next section), you run the script like this:
 You will need to configure the following four variables at the top of the script:
 
 * `input_dir`: the path to the page images, organized by book or newspaper issue.
-* `output_dir`: where to save the output, including a copy of the input page image files. If left empty (`''`), the input_dir will be used. If the output directory doesn't exist, it will be created.
+* `output_dir`: where to save the output, including a copy of the input page image files. If left empty (`''`), output will be written back to `input_dir`. If the output directory doesn't exist, it will be created.
 * `page_image_extension`: the extension of the source page image file, without the leading period, e.g. `tif`.
 * `filename_segment_separator`: the character used to separate the page number from the rest of the page image file, e.g. the `-` that separates the `02` from `1948-11-12` in `1948-11-12-02.tif`. Does not need to be the same as the separator used in the non-page number part of the filename. It also doesn't matter what comes before the page number separator.
 * `generate_hocr`: set to `True` to generate hOCR from the page images, `False` to not generate it.
