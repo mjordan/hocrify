@@ -22,7 +22,7 @@ ocr_extension = 'txt'
 source_language = 'eng'
 filename_segment_separator = '-'
 generate_hocr = True
-generate_ocr = False
+generate_ocr = True
 log_file_path = 'tesseract.log'
 
 # If you don't have tesseract executable in your system's PATH, uncomment this

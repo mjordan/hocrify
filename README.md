@@ -26,30 +26,6 @@ input/
 ├── 1948-10-07
 │   ├── 1948-10-07-01.hocr
 │   ├── 1948-10-07-01.tif
-│   ├── 1948-10-07-02.hocr
-│   ├── 1948-10-07-02.tif
-│   ├── 1948-10-07-03.hocr
-│   ├── 1948-10-07-03.tif
-│   ├── 1948-10-07-04.hocr
-│   └── 1948-10-07-04.tif
-└── 1948-11-12
-    ├── 1948-11-12-01.hocr
-    ├── 1948-11-12-01.tif
-    ├── 1948-11-12-02.hocr
-    ├── 1948-11-12-02.tif
-    ├── 1948-11-12-03.hocr
-    ├── 1948-11-12-03.tif
-    ├── 1948-11-12-04.hocr
-    └── 1948-11-12-04.tif
-```
-
-Hocrify also provides the option to create an OCR file for each page image, which contains the extracted text content (Hocrify doesn't reprocess the input image):
-
-```
-input/
-├── 1948-10-07
-│   ├── 1948-10-07-01.hocr
-│   ├── 1948-10-07-01.tif
 │   ├── 1948-10-07-01.txt
 │   ├── 1948-10-07-02.hocr
 │   ├── 1948-10-07-02.tif
@@ -74,6 +50,31 @@ input/
     ├── 1948-11-12-04.tif
     └── 1948-11-12-04.txt
 ```
+
+Hocrify also provides the option to not create OCR or hOCR. For example, if you set the `generate_ocr` configuration variable to `False`, your output will look like this:
+```
+input/
+├── 1948-10-07
+│   ├── 1948-10-07-01.hocr
+│   ├── 1948-10-07-01.tif
+│   ├── 1948-10-07-02.hocr
+│   ├── 1948-10-07-02.tif
+│   ├── 1948-10-07-03.hocr
+│   ├── 1948-10-07-03.tif
+│   ├── 1948-10-07-04.hocr
+│   └── 1948-10-07-04.tif
+└── 1948-11-12
+    ├── 1948-11-12-01.hocr
+    ├── 1948-11-12-01.tif
+    ├── 1948-11-12-02.hocr
+    ├── 1948-11-12-02.tif
+    ├── 1948-11-12-03.hocr
+    ├── 1948-11-12-03.tif
+    ├── 1948-11-12-04.hocr
+    └── 1948-11-12-04.tif
+```
+
+
 Usage is not limited to newspaper issues. Any paged item will work as long as page images in the item are in a single directory under 'input':
 
 ```
@@ -105,9 +106,11 @@ You will need to configure the following variables at the top of the script:
 * `input_dir`: the path to the page images, organized by book or newspaper issue.
 * `output_dir`: where to save the output, including a copy of the input page image files. If left empty (`''`), output will be written back to `input_dir`. If the output directory doesn't exist, it will be created.
 * `page_image_extension`: the extension of the source page image file, without the leading period, e.g. `tif`.
+* `hocr_extension`: the extension to assign to the generated hOCR files, e.g. `hocr`.
+* `ocr_extension`: the extension to assign to the generated OCR files, e.g. `txt`.
 * `filename_segment_separator`: the character used to separate the page number from the rest of the page image file, e.g. the `-` that separates the `02` from `1948-11-12` in `1948-11-12-02.tif`. Does not need to be the same as the separator used in the non-page number part of the filename. It also doesn't matter what comes before the page number separator.
 * `generate_hocr`: set to `True` to generate hOCR from the page images, `False` to not generate it.
-* `generate_ocr`: set to `True` to extract the text from the hOCR, producing the equivalent of an OCR file with no line breaks. Set to `False` to not create OCR.
+* `generate_ocr`: set to `True` to extract the text from the hOCR, producing the equivalent of an OCR file with no line breaks. Generally speaking, you should generate both OCR and hOCR at the same time to ensure that the text content of the hOCR matches the OCR. Set to `False` to not create OCR.
 * `log_file_path`: the path to your log file.
 * `source_language`: language of the source material. Common languages are 'eng', 'fre' and 'chi_sim'. Note that not all language packs may be installed on a given computer. Run `tesseract --list-langs` to see those installed.
 * `pytesseract.pytesseract.tesseract_cmd`: the full path to the Tesseract executable file. Whether this is necessary will depend on the computer the script is running on.
