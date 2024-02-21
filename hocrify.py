@@ -27,7 +27,7 @@ log_file_path = 'tesseract.log'
 
 # If you don't have tesseract executable in your system's PATH, uncomment this
 # variable and specify the path to the tesseract executable.
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # A couple of Tesseract config options that are commonly used to optimize for speed.
 # Leave the 'tessedit_do_invert' Tesseract config setting as '0' unless your page
