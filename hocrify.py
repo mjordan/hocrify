@@ -51,12 +51,6 @@ if not os.path.exists(input_dir):
     logging.error(message)
     sys.exit(message)
 
-try:
-    tesseract_version = pytesseract.pytesseract.get_tesseract_version()
-except Exception as e:
-    logging.error(f'Tesseract not found. Try uncommenting and configuring the "pytesseract.pytesseract.tesseract_cmd". Additional error information: {e}')
-    print('Tesseract not found. Try uncommenting and configuring the "pytesseract.pytesseract.tesseract_cmd". See the log for more info.')
-
 if generate_hocr is True and generate_ocr is True:
     generate_message = "hOCR and OCR"
 elif generate_hocr is True and generate_ocr is False:
@@ -65,19 +59,13 @@ else:
     # generate_hocr is False and generate_ocr is True
     generate_message = "OCR"
 
-if len(output_dir) > 0:
-    start_message = f"hocrify job started (generating {generate_message}), using page images from {os.path.abspath(input_dir)} and saving output to {os.path.abspath(output_dir)} (tesseract version {tesseract_version})."
-else:
-    start_message = f"hocrify job started (generating {generate_message}), using page images from {os.path.abspath(input_dir)} and saving output to the source directory (tesseract version {tesseract_version})."
-logging.info(start_message)
-
 # Directories under the input directory, containing
 # page images of books or newspaper issues.
 page_containers = os.listdir(input_dir)
 
 def generate_output(oddeven):
     for page_container in page_containers:
-        if len(output_dir) > 0:
+        if output_dir != '':
             if not os.path.exists(os.path.join(output_dir, page_container)):
                 os.mkdir(os.path.join(output_dir, page_container))
 
@@ -85,16 +73,22 @@ def generate_output(oddeven):
 
         for page in pages:
             timer_start = time.perf_counter()
+
             # We distinguish between odd an even pages so each of the two
             # processes spawned below know which input files to process.
-            filename_segments = os.path.splitext(page)[0].split(filename_segment_separator)
-            order_segment = filename_segments[-1]
-            if int(order_segment) % 2 == 0 and oddeven == 'odd':
-                continue
-            if int(order_segment) % 2 != 0 and oddeven == 'even':
-                continue
-
             if page.endswith('.' + page_image_extension):
+                filename_segments = os.path.splitext(page)[0].split(filename_segment_separator)
+                order_segment = filename_segments[-1]
+                if re.match('^[0-9]+$', order_segment) is None:
+                    # Note: This message will appear twice in the log, once for the 'odd' and once for the 'even' invocaction.
+                    logging.error(f'Order segment "{order_segment}" in filename "{page}" is not valid; skipping this file.')
+                    continue
+
+                if int(order_segment) % 2 == 0 and oddeven == 'odd':
+                    continue
+                if int(order_segment) % 2 != 0 and oddeven == 'even':
+                    continue
+
                 page_image_filepath = os.path.join(input_dir, page_container, page)
                 if len(output_dir) > 0:
                     shutil.copyfile(page_image_filepath, os.path.join(output_dir, page_container, page))
@@ -142,7 +136,19 @@ def generate_output(oddeven):
                 print(page_message)
 
 if __name__ == "__main__":
-    if len(output_dir) > 0 and not os.path.exists(output_dir):
+    try:
+        tesseract_version = pytesseract.pytesseract.get_tesseract_version()
+    except Exception as e:
+        logging.error(f'Tesseract not found. Try uncommenting and configuring the "pytesseract.pytesseract.tesseract_cmd". Additional error information: {e}')
+        print('Tesseract not found. Try uncommenting and configuring the "pytesseract.pytesseract.tesseract_cmd". See the log for more info.')
+
+    if output_dir != '':
+        start_message = f"hocrify job started (generating {generate_message}), using page images from {os.path.abspath(input_dir)} and saving output to {os.path.abspath(output_dir)} (tesseract version {tesseract_version})."
+    else:
+        start_message = f"hocrify job started (generating {generate_message}), using page images from {os.path.abspath(input_dir)} and saving output to the source directory (tesseract version {tesseract_version})."
+    logging.info(start_message)
+
+    if output_dir != '' and not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
     # Split processing into odd and even pages.
