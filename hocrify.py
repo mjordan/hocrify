@@ -22,12 +22,12 @@ ocr_extension = 'txt'
 source_language = 'eng'
 filename_segment_separator = '-'
 generate_hocr = True
-generate_ocr = False
+generate_ocr = True
 log_file_path = 'tesseract.log'
 
 # If you don't have tesseract executable in your system's PATH, uncomment this
 # variable and specify the path to the tesseract executable.
-# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # A couple of Tesseract config options that are commonly used to optimize for speed.
 # Leave the 'tessedit_do_invert' Tesseract config setting as '0' unless your page
@@ -87,14 +87,14 @@ def generate_output(oddeven):
             timer_start = time.perf_counter()
             # We distinguish between odd an even pages so each of the two
             # processes spawned below know which input files to process.
-            filename_segments = os.path.splitext(page)[0].split(filename_segment_separator)
-            order_segment = filename_segments[-1]
-            if int(order_segment) % 2 == 0 and oddeven == 'odd':
-                continue
-            if int(order_segment) % 2 != 0 and oddeven == 'even':
-                continue
-
             if page.endswith('.' + page_image_extension):
+                filename_segments = os.path.splitext(page)[0].split(filename_segment_separator)
+                order_segment = filename_segments[-1]
+                if int(order_segment) % 2 == 0 and oddeven == 'odd':
+                    continue
+                if int(order_segment) % 2 != 0 and oddeven == 'even':
+                    continue
+
                 page_image_filepath = os.path.join(input_dir, page_container, page)
                 if len(output_dir) > 0:
                     shutil.copyfile(page_image_filepath, os.path.join(output_dir, page_container, page))
