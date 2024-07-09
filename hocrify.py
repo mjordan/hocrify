@@ -106,7 +106,7 @@ def generate_output(oddeven):
                     hocr_content = pytesseract.image_to_pdf_or_hocr(page_image_filepath, extension='hocr', lang=source_language, config=config_options)
                     if generate_hocr is True:
                         # If we want to keep the hOCR data, we save it to a file.
-                        hocr_file = open(page_hocr_filepath, 'wb+')
+                        hocr_file = open(page_hocr_filepath, 'wb+', encoding='utf-8')
                         hocr_file.write(hocr_content)
                         hocr_file.close
                 except Exception as e:
@@ -122,7 +122,7 @@ def generate_output(oddeven):
                         ocr_content = re.sub('\n', '', ocr_content)
                         ocr_content = re.sub('^.*transitional.dtd"', '', ocr_content)
                         ocr_content = re.sub(' +', ' ', ocr_content)
-                        ocr_file = open(page_ocr_filepath, 'w+')
+                        ocr_file = open(page_ocr_filepath, 'w+', encoding='utf-8')
                         ocr_file.write(ocr_content.strip())
                         ocr_file.close
                     except Exception as e:
