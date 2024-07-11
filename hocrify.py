@@ -13,17 +13,17 @@ from bs4 import BeautifulSoup
 # Configuration varaibles #
 ###########################
 
-input_dir = 'input'
+input_dir = "input"
 # Leave 'output_dir' empty ('') to write output back into input_dir.
-output_dir = 'output'
-page_image_extension = 'tif'
-hocr_extension = 'hocr'
-ocr_extension = 'txt'
-source_language = 'eng'
-filename_segment_separator = '-'
+output_dir = "output"
+page_image_extension = "tif"
+hocr_extension = "hocr"
+ocr_extension = "txt"
+source_language = "eng"
+filename_segment_separator = "-"
 generate_hocr = True
 generate_ocr = True
-log_file_path = 'tesseract.log'
+log_file_path = "tesseract.log"
 
 # If you don't have tesseract executable in your system's PATH, uncomment this
 # variable and specify the path to the tesseract executable.
@@ -34,7 +34,7 @@ log_file_path = 'tesseract.log'
 # images contain substantial amounts of text in more than one language. If the
 # accuracy of the OCR in the additional language text is very poor, you should change
 # 'tessedit_do_invert' to '1', but doing so will come with a hit to processing speed.
-config_options = '-c tessedit_do_invert=0 -c OMP_THREAD_LIMIT=1'
+config_options = "-c tessedit_do_invert=0 -c OMP_THREAD_LIMIT=1"
 
 #######################################################
 # You do not need to change anything below this line. #
@@ -43,8 +43,9 @@ config_options = '-c tessedit_do_invert=0 -c OMP_THREAD_LIMIT=1'
 logging.basicConfig(
     filename=log_file_path,
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%d-%b-%y %H:%M:%S')
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%d-%b-%y %H:%M:%S",
+)
 
 if not os.path.exists(input_dir):
     message = f'Error: cannot find input directory "{input_dir}".'
@@ -63,9 +64,10 @@ else:
 # page images of books or newspaper issues.
 page_containers = os.listdir(input_dir)
 
+
 def generate_output(oddeven):
     for page_container in page_containers:
-        if output_dir != '':
+        if output_dir != "":
             if not os.path.exists(os.path.join(output_dir, page_container)):
                 os.mkdir(os.path.join(output_dir, page_container))
 
@@ -76,58 +78,84 @@ def generate_output(oddeven):
 
             # We distinguish between odd an even pages so each of the two
             # processes spawned below know which input files to process.
-            if page.endswith('.' + page_image_extension):
-                filename_segments = os.path.splitext(page)[0].split(filename_segment_separator)
+            if page.endswith("." + page_image_extension):
+                filename_segments = os.path.splitext(page)[0].split(
+                    filename_segment_separator
+                )
                 order_segment = filename_segments[-1]
-                if re.match('^[0-9]+$', order_segment) is None:
+                if re.match("^[0-9]+$", order_segment) is None:
                     # Note: This message will appear twice in the log, once for the 'odd' and once for the 'even' invocaction.
-                    logging.error(f'Order segment "{order_segment}" in filename "{page}" is not valid; skipping this file.')
+                    logging.error(
+                        f'Order segment "{order_segment}" in filename "{page}" is not valid; skipping this file.'
+                    )
                     continue
 
-                if int(order_segment) % 2 == 0 and oddeven == 'odd':
+                if int(order_segment) % 2 == 0 and oddeven == "odd":
                     continue
-                if int(order_segment) % 2 != 0 and oddeven == 'even':
+                if int(order_segment) % 2 != 0 and oddeven == "even":
                     continue
 
                 page_image_filepath = os.path.join(input_dir, page_container, page)
                 if len(output_dir) > 0:
-                    shutil.copyfile(page_image_filepath, os.path.join(output_dir, page_container, page))
-                page_image_filepath_without_extension = os.path.splitext(page_image_filepath)[0]
+                    shutil.copyfile(
+                        page_image_filepath,
+                        os.path.join(output_dir, page_container, page),
+                    )
+                page_image_filepath_without_extension = os.path.splitext(
+                    page_image_filepath
+                )[0]
                 if len(output_dir) > 0:
-                    page_hocr_filepath = os.path.join(output_dir, page_container, os.path.splitext(page)[0] + '.' + hocr_extension)
-                    page_ocr_filepath = os.path.join(output_dir, page_container, os.path.splitext(page)[0] + '.' + ocr_extension)
+                    page_hocr_filepath = os.path.join(
+                        output_dir,
+                        page_container,
+                        os.path.splitext(page)[0] + "." + hocr_extension,
+                    )
+                    page_ocr_filepath = os.path.join(
+                        output_dir,
+                        page_container,
+                        os.path.splitext(page)[0] + "." + ocr_extension,
+                    )
                 else:
-                    page_hocr_filepath = os.path.join(page_image_filepath_without_extension + '.' + hocr_extension)
-                    page_ocr_filepath = os.path.join(page_image_filepath_without_extension + '.' + ocr_extension)
+                    page_hocr_filepath = os.path.join(
+                        page_image_filepath_without_extension + "." + hocr_extension
+                    )
+                    page_ocr_filepath = os.path.join(
+                        page_image_filepath_without_extension + "." + ocr_extension
+                    )
 
                 try:
                     # Generate hOCR, even if generate_hocr is False, since we need
                     # to get its text content to create the OCR data.
-                    hocr_content = pytesseract.image_to_pdf_or_hocr(page_image_filepath, extension='hocr', lang=source_language, config=config_options)
+                    hocr_content = pytesseract.image_to_pdf_or_hocr(
+                        page_image_filepath,
+                        extension="hocr",
+                        lang=source_language,
+                        config=config_options,
+                    )
                     if generate_hocr is True:
-                        # If we want to keep the hOCR data, we save it to a file.
-                        hocr_file = open(page_hocr_filepath, 'wb+', encoding='utf-8')
+                        # If we want to keep the hOCR data, we save it to a file. Will be utf-8 encoded.
+                        hocr_file = open(page_hocr_filepath, "wb+")
                         hocr_file.write(hocr_content)
                         hocr_file.close
                 except Exception as e:
-                    logging.error(f'Error generating hOCR: {e}')
-                    print(f'Error generating hOCR: {e}')
+                    logging.error(f"Error generating hOCR: {e}")
+                    print(f"Error generating hOCR: {e}")
 
                 # Extract text content from the hOCR XML and save it to an OCR file.
                 if generate_ocr is True:
                     try:
-                        soup = BeautifulSoup(hocr_content, 'html.parser')
+                        soup = BeautifulSoup(hocr_content, "html.parser")
                         page_text = soup.findAll(text=True)
-                        ocr_content = ' '.join(page_text)
-                        ocr_content = re.sub('\n', '', ocr_content)
-                        ocr_content = re.sub('^.*transitional.dtd"', '', ocr_content)
-                        ocr_content = re.sub(' +', ' ', ocr_content)
-                        ocr_file = open(page_ocr_filepath, 'w+', encoding='utf-8')
+                        ocr_content = " ".join(page_text)
+                        ocr_content = re.sub("\n", "", ocr_content)
+                        ocr_content = re.sub('^.*transitional.dtd"', "", ocr_content)
+                        ocr_content = re.sub(" +", " ", ocr_content)
+                        ocr_file = open(page_ocr_filepath, "w+", encoding="utf-8")
                         ocr_file.write(ocr_content.strip())
                         ocr_file.close
                     except Exception as e:
-                        logging.error(f'Error generating OCR: {e}')
-                        print(f'Error generating OCR: {e}')
+                        logging.error(f"Error generating OCR: {e}")
+                        print(f"Error generating OCR: {e}")
 
                 timer_end = time.perf_counter()
 
@@ -135,28 +163,33 @@ def generate_output(oddeven):
                 logging.info(page_message)
                 print(page_message)
 
+
 if __name__ == "__main__":
     try:
         tesseract_version = pytesseract.pytesseract.get_tesseract_version()
     except Exception as e:
-        logging.error(f'Tesseract not found. Try uncommenting and configuring the "pytesseract.pytesseract.tesseract_cmd". Additional error information: {e}')
-        print('Tesseract not found. Try uncommenting and configuring the "pytesseract.pytesseract.tesseract_cmd". See the log for more info.')
+        logging.error(
+            f'Tesseract not found. Try uncommenting and configuring the "pytesseract.pytesseract.tesseract_cmd". Additional error information: {e}'
+        )
+        print(
+            'Tesseract not found. Try uncommenting and configuring the "pytesseract.pytesseract.tesseract_cmd". See the log for more info.'
+        )
 
-    if output_dir != '':
+    if output_dir != "":
         start_message = f"hocrify job started (generating {generate_message}), using page images from {os.path.abspath(input_dir)} and saving output to {os.path.abspath(output_dir)} (tesseract version {tesseract_version})."
     else:
         start_message = f"hocrify job started (generating {generate_message}), using page images from {os.path.abspath(input_dir)} and saving output to the source directory (tesseract version {tesseract_version})."
     logging.info(start_message)
 
-    if output_dir != '' and not os.path.exists(output_dir):
+    if output_dir != "" and not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
     # Split processing into odd and even pages.
-    process_odd = Process(target=generate_output, args=('odd',))
+    process_odd = Process(target=generate_output, args=("odd",))
     process_odd.start()
     process_odd.join()
 
-    process_even = Process(target=generate_output, args=('even',))
+    process_even = Process(target=generate_output, args=("even",))
     process_even.start()
     process_even.join()
 
